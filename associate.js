@@ -5,7 +5,17 @@ exports.match = function (event, commandPrefix) {
     
 	var s = event.body.toLowerCase();
 	for (var assoc in exports.config[event.thread_id]) {
-        if (s.indexOf(assoc.toLowerCase()) !== -1) {
+        var match;
+
+        //If it isn't a valid regex, terrible stuff happens
+        try {
+            var regex = new RegExp(assoc, 'gim');
+            match = s.match(regex);
+        } catch(err) {
+            match = s.indexOf(assoc.toLowerCase()) !== -1;
+        }
+
+        if (match) {
             if (!event.__associateCmd) {
                 event.__associateCmd = {
                     thread: event.thread_id,
